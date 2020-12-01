@@ -12,20 +12,21 @@
 
 <script>
 export default {
+    props: {
+        categories: {
+            type: Array
+        }
+    },
     data() {
         return {
-            categories: [],
             active: 0
         }
     },
-    methods: {
-        async fetch() {
-            const res = await this.$http.get('/category')
-            this.categories = res.data
+    methods: {},
+    watch: {
+        active() {
+            this.$emit('activeChange', this.active)
         }
-    },
-    created() {
-        this.fetch()
     }
 }
 </script>

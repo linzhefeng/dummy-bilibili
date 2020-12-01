@@ -1,4 +1,4 @@
-# bili-vue
+# dummy-bilibili
 
 ## Project setup
 ```
