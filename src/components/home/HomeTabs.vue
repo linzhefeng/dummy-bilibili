@@ -5,7 +5,9 @@
                 v-for="item in categories"
                 :key="item._id"
                 :title="item.title"
-            ></van-tab>
+            >
+                <slot name="tabSlot"></slot>
+            </van-tab>
         </van-tabs>
     </div>
 </template>
