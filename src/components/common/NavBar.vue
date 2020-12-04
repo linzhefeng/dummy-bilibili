@@ -52,7 +52,9 @@ export default {
         }
     },
     created() {
-        this.fetch()
+        if (localStorage.getItem('id')) {
+            this.fetch()
+        }
     }
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
-    <div class="editBottom">
-        <p @click="handleClick">{{ label }}</p>
+    <div class="editBottom" @click="clickHandle">
+        <p>{{ label }}</p>
     </div>
 </template>
 
@@ -9,12 +9,8 @@ export default {
     data() {
         return {}
     },
-    props: ['label', 'to'],
-    methods: {
-        handleClick() {
-            this.$router.push(this.to)
-        }
-    }
+    props: ['label', 'clickHandle'],
+    methods: {}
 }
 </script>
 <style lang="scss">

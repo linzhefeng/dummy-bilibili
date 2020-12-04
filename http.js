@@ -23,10 +23,10 @@ http.interceptors.response.use(
         return response
     },
     error => {
-        // if (error.response.status == 401 || error.response.status == 402) {
-        //     router.push('/login')
-        //     Vue.prototype.$msg.fail(error.response.data.message)
-        // }
+        if (error.response.status == 401 || error.response.status == 402) {
+            router.push('/login')
+            Vue.prototype.$msg.fail(error.response.data.message)
+        }
         return Promise.reject(error)
     }
 )

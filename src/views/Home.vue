@@ -4,7 +4,9 @@
         <home-tabs @activeChange="aChangeHandle" :categories="categories">
             <article-item
                 slot="tabSlot"
-                :data="categories[curIndex]"
+                :info="categories[curIndex]"
+                @dataOnload="onloadHandle"
+                ref="article"
             ></article-item>
         </home-tabs>
     </div>
@@ -71,6 +73,22 @@ export default {
         // 获取当前的categories的item
         curCatItem() {
             return this.categories[this.curIndex]
+        },
+        // 数据到底了继续加载
+        async onloadHandle(limit) {
+            let arr = []
+            arr = this.curCatItem().list
+            console.log(arr.length)
+            const { data } = await this.fetchArticle()
+            arr = arr.concat(data)
+            if (arr.length <= limit) {
+                setTimeout(() => {
+                    this.curCatItem().list = arr
+                    this.$refs.article.loading = false
+                }, 1500)
+            } else {
+                this.$refs.article.finished = true
+            }
         }
     },
     async created() {

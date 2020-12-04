@@ -60,7 +60,8 @@
             </van-action-sheet>
         </div>
         <div class="bottom">
-            <edit-bottom label="返回个人中心" to="/userinfo"></edit-bottom>
+            <edit-bottom label="返回个人中心" :clickHandle="back"></edit-bottom>
+            <edit-bottom label="退出登录" :clickHandle="exit"></edit-bottom>
         </div>
     </div>
 </template>
@@ -154,6 +155,16 @@ export default {
             this.$nextTick(() => {
                 this.$refs.dialogText.focus()
             })
+        },
+        // 返回个人中心
+        back() {
+            this.$router.push('/userinfo')
+        },
+        // 退出登录
+        exit() {
+            localStorage.removeItem('id')
+            localStorage.removeItem('token')
+            this.$router.push('/')
         }
     },
     created() {
