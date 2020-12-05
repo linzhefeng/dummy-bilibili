@@ -33,6 +33,11 @@ const routes = [
         meta: {
             isToken: true
         }
+    },
+    {
+        path: '/article/:id',
+        name: 'Article',
+        component: () => import('../views/Article.vue')
     }
 ]
 

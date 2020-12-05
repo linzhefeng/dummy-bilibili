@@ -30,16 +30,17 @@ export default {
         ArticleItem
     },
     methods: {
-        /*-----------------------------数据获取函数start --------------------------------*/
+        /*-----------------------------fetch start --------------------------------*/
         async fetchCategories() {
-            // 获取首页分类数据
-            const res = await this.$http.get('/category')
+            // 获取首页分类数据,并返回
+            return await this.$http.get('/category')
+
             // 接下来把数据处理一下
-            this.categoryHandle(res.data)
+            // this.categoryHandle(res.data)
         },
         async fetchArticle() {
             // 获取文章数据,
-            let item = this.curCatItem()
+            let item = this.curCategory()
             const res = await this.$http.get('/detail/' + item._id, {
                 params: {
                     page: item.page,
@@ -48,28 +49,26 @@ export default {
             })
             return res
         },
-        /* ----------------------------数据获取函数end----------------------------- */
+        /* ----------------------------fetch end----------------------------- */
 
         /* -------------------------------handle start----------------------------------- */
-        categoryHandle(data) {
+        categoryHandle(res, page, pagesize) {
             // 在分类的每个对象中新增list属性
-            let newCat = data.map(item => {
+            let tempCategories = res.data.map(item => {
                 item.list = []
-                item.page = 0
-                item.pagesize = 10
+                item.page = page
+                item.pagesize = pagesize
                 return item
             })
-            this.categories = newCat
+            this.categories = tempCategories
         },
         async onloadHandle(limit) {
             // 数据到底了继续加载
-            let arr = this.curCatItem().list
-            let page = this.curCatItem().page++
-            const { data } = await this.fetchArticle()
-            arr.push(...data)
-            if (page < limit) {
+            let length = this.curCategory().list.length
+            if (length < limit) {
+                const { data } = await this.fetchArticle()
                 setTimeout(() => {
-                    this.curCatItem().list = arr
+                    this.curCategory().list.push(...data)
                     this.$refs.article.loading = false
                 }, 1500)
             } else {
@@ -81,8 +80,11 @@ export default {
             // 子组件active改变后出发的处理事件,接收tab的当前下标
             // 当前下标存入data中
             this.curIndex = index
-            const res = await this.fetchArticle()
-            this.categories[index].list = res.data
+            // 应当先判断当前是否分类的list是否已经有内容了
+            if (!this.curCategory().list.length) {
+                const res = await this.fetchArticle()
+                this.categories[index].list = res.data
+            }
         },
         /* -------------------------------handle end----------------------------------- */
 
@@ -90,17 +92,18 @@ export default {
         async articleInit() {
             // 第一次加载页面 自动加载文章
             const res = await this.fetchArticle()
-            const item = this.curCatItem()
+            const item = this.curCategory()
             item.list = res.data
         },
-        curCatItem() {
-            // 获取当前的categories的item
+        curCategory() {
+            // 获取当前分类
             return this.categories[this.curIndex]
         }
     },
 
     async created() {
-        await this.fetchCategories()
+        const res = await this.fetchCategories()
+        this.categoryHandle(res, 0, 10)
         this.articleInit()
     }
 }

@@ -15,7 +15,18 @@
                     @click="itemClickHandle(item.id)"
                 >
                     <div class="picture">
-                        <img :src="item.img" alt="" />
+                        <img
+                            v-if="
+                                item.img
+                                    .toString()
+                                    .startsWith(
+                                        'https://node.12380ch.com/upload/file-'
+                                    )
+                            "
+                            src="../../assets/images/replacer.jpg"
+                            alt=""
+                        />
+                        <img v-else :src="item.img" alt="" />
                         <div class="detail">
                             <span
                                 class="volume iconfont icon-iconset0481
@@ -49,11 +60,11 @@ export default {
     props: ['info'],
     methods: {
         itemClickHandle(id) {
-            this.$router.push('/detail/' + id)
+            this.$router.push('/article/' + id)
         },
         onload() {
             // sencond param is limit
-            this.$emit('dataOnload', 40)
+            this.$emit('dataOnload', 50)
         }
     }
 }
@@ -68,14 +79,14 @@ export default {
         display: flex;
         flex-flow: column;
         width: 45vw;
-        height: 8rem;
+        height: 30vw;
         margin-bottom: 0.2rem;
         padding: 0.1rem;
 
         .picture {
             width: 100%;
-            height: 6rem;
-            background: gray;
+            height: 25vw;
+            background: lightblue;
             overflow: hidden;
             position: relative;
             img {
