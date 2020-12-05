@@ -26,7 +26,7 @@
                             src="../../assets/images/replacer.jpg"
                             alt=""
                         />
-                        <img v-else :src="item.img" alt="" />
+                        <img v-else :src="item.img" alt="" :key="index" />
                         <div class="detail">
                             <span
                                 class="volume iconfont icon-iconset0481
