@@ -1,7 +1,7 @@
 <template>
     <div>
         <nav-bar></nav-bar>
-        <home-tabs @activeChange="aChangeHandle" :categories="categories">
+        <home-tabs @activeChange="activeChangeHandle" :categories="categories">
             <article-item
                 slot="tabSlot"
                 :info="categories[curIndex]"
@@ -30,24 +30,15 @@ export default {
         ArticleItem
     },
     methods: {
-        // 获取首页分类
+        /*-----------------------------数据获取函数start --------------------------------*/
         async fetchCategories() {
+            // 获取首页分类数据
             const res = await this.$http.get('/category')
             // 接下来把数据处理一下
-            this.handleCategory(res.data)
+            this.categoryHandle(res.data)
         },
-        // 在分类的每个对象中新增list属性
-        handleCategory(data) {
-            let newCat = data.map(item => {
-                item.list = []
-                item.page = 0
-                item.pagesize = 10
-                return item
-            })
-            this.categories = newCat
-        },
-        // 获取文章数据
         async fetchArticle() {
+            // 获取文章数据,
             let item = this.curCatItem()
             const res = await this.$http.get('/detail/' + item._id, {
                 params: {
@@ -57,31 +48,26 @@ export default {
             })
             return res
         },
-        // 子组件active改变后出发的处理事件,接收tab的当前下标
-        async aChangeHandle(index) {
-            // 当前下标存入data中
-            this.curIndex = index
-            const res = await this.fetchArticle()
-            this.categories[index].list = res.data
+        /* ----------------------------数据获取函数end----------------------------- */
+
+        /* -------------------------------handle start----------------------------------- */
+        categoryHandle(data) {
+            // 在分类的每个对象中新增list属性
+            let newCat = data.map(item => {
+                item.list = []
+                item.page = 0
+                item.pagesize = 10
+                return item
+            })
+            this.categories = newCat
         },
-        // 第一次加载页面 自动加载文章
-        async articleInit() {
-            const res = await this.fetchArticle()
-            const item = this.curCatItem()
-            item.list = res.data
-        },
-        // 获取当前的categories的item
-        curCatItem() {
-            return this.categories[this.curIndex]
-        },
-        // 数据到底了继续加载
         async onloadHandle(limit) {
-            let arr = []
-            arr = this.curCatItem().list
-            console.log(arr.length)
+            // 数据到底了继续加载
+            let arr = this.curCatItem().list
+            let page = this.curCatItem().page++
             const { data } = await this.fetchArticle()
-            arr = arr.concat(data)
-            if (arr.length <= limit) {
+            arr.push(...data)
+            if (page < limit) {
                 setTimeout(() => {
                     this.curCatItem().list = arr
                     this.$refs.article.loading = false
@@ -89,8 +75,30 @@ export default {
             } else {
                 this.$refs.article.finished = true
             }
+        },
+
+        async activeChangeHandle(index) {
+            // 子组件active改变后出发的处理事件,接收tab的当前下标
+            // 当前下标存入data中
+            this.curIndex = index
+            const res = await this.fetchArticle()
+            this.categories[index].list = res.data
+        },
+        /* -------------------------------handle end----------------------------------- */
+
+        /* ---------------------------------other----------------------------------------- */
+        async articleInit() {
+            // 第一次加载页面 自动加载文章
+            const res = await this.fetchArticle()
+            const item = this.curCatItem()
+            item.list = res.data
+        },
+        curCatItem() {
+            // 获取当前的categories的item
+            return this.categories[this.curIndex]
         }
     },
+
     async created() {
         await this.fetchCategories()
         this.articleInit()
